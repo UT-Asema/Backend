@@ -45,10 +45,37 @@ module.exports = {
       // get search query from path
       const query = path.split('/')[-1]
 
-      // get posts from database
+      // get posts containing query in title limit 10
+      db.all('SELECT * FROM posts WHERE title LIKE ? LIMIT 10', ['%' + query + '%'], function (err, rows) {
+        if (err) {
+          console.log(err);
+          res.status(500).send('Internal Server Error');
+        } else {
+          data = [];
+          for (let row of rows) {
+            data.push({
+              id: row.id,
+              title: row.title,
+              description: row.description,
+              content: row.content,
+              date: row.date,
+              modified_date: row.modified_date,
+              rating: -1,
+            })
 
-      // return search page
-
+            // get rating from database
+            db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
+              if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error');
+              } else if (!!row) {
+                data[data.length - 1].rating = row.rating;
+              }
+            });
+          }
+          res.status(200).send(data);
+        }
+      })
     }
   },
   post: {
