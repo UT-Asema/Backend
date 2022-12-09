@@ -2,7 +2,7 @@ module.exports = {
   path: 'posts/',
   get: {
     // wildcard route
-    '*': function (req, res) {
+    'get/*': function (req, res) {
       // get the path from the request
       const path = req.path
       // get post id from path
@@ -11,6 +11,17 @@ module.exports = {
       // get post from database
 
       // return post page
+
+    },
+    'search/*': function (req, res) {
+      // get the path from the request
+      const path = req.path
+      // get search query from path
+      const query = path.split('/')[-1]
+
+      // get posts from database
+
+      // return search page
 
     }
   },

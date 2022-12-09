@@ -4,10 +4,14 @@ const postController = require('./controllers/postController');
 
 // export the routes
 module.exports = function(app) {
+    // for each controller
     for (let controller of [loginController, postController]) {
-        for (let method in loginController) {
-            for (let route in loginController[method]) {
-                app[method]('/' + controller.path + route, loginController[method][route]);
+        // for each method
+        for (let method in controller) {
+            // for each route
+            for (let route in controller[method]) {
+                // get the path from the controller and route name and method
+                app[method]('/' + controller.path + route, controller[method][route]);
             }
         }
     }
