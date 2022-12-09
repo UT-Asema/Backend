@@ -1,3 +1,4 @@
+// html server
 const express = require('express');
 const app = express();
 
@@ -10,4 +11,17 @@ routes(app);
 // start server
 app.listen(3000, function() {
     console.log('Listening on port 3000');
+});
+
+// websocket server
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+        console.log('received: %s', message);
+    });
+
+    ws.send('something');
 })
+
