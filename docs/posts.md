@@ -38,7 +38,7 @@ Create a new post
 | description | string | The description of the post | &#9745;|
 | content | string | The content of the post (raw json of the content structure) | &#9745;|
 ### Response
-Redirects to /posts/get/:ID if successful and returns error if not
+If user is not logged in, redirects to login page. Otherwise, redirects to /posts/get/:ID if successful and returns error if not
 
 ## /posts/edit/
 ### Description
@@ -51,7 +51,7 @@ Edit a post
 | description | string | The description of the post | &#9745;|
 | content | string | The content of the post (raw json of the content structure) | &#9745;|
 ### Response
-Redirects to /posts/get/:ID if successful (reloading page) and returns error if not
+If user is not logged in, redirects to login page. Otherwise, redirects to /posts/get/:ID if successful and returns error if not
 
 ## /posts/delete/
 ### Description
@@ -61,7 +61,7 @@ Delete a post
 | --- | --- | --- |------------------|
 | id | string | The ID of the post to delete | &#9745;|
 ### Response
-Redirects to / if successful and returns error if not
+If user is not logged in, redirects to login page. Otherwise, redirects to /posts/get/:ID if successful and returns error if not
 
 ## /posts/rate/
 ### Description
@@ -72,4 +72,4 @@ Rate a post
 | id | string | The ID of the post to rate      | &#9745;|
 | rating | number | The rating of the post (1 to 5) | &#9745;|
 ### Response
-Redirects to /posts/get/:ID if successful (reloading page) and returns error if not
+If user is not logged in, redirects to login page. Otherwise, redirects to /posts/get/:ID if successful and returns error if not
