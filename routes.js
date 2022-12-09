@@ -1,9 +1,14 @@
 // load files from controllers folder
-// TODO add controllers
+const loginController = require('./controllers/loginController');
+const postController = require('./controllers/postController');
 
 // export the routes
 module.exports = function(app) {
-    app.get('/', function(req, res) {
-        res.send('Hello World!');
-    });
+    for (let controller of [loginController, postController]) {
+        for (let method in loginController) {
+            for (let route in loginController[method]) {
+                app[method]('/' + controller.path + route, loginController[method][route]);
+            }
+        }
+    }
 }
