@@ -6,6 +6,9 @@ module.exports = {
     hash.update(salt)
     return hash.digest('hex')
   },
+  makeSalt: function () {
+    return crypto.randomBytes(16).toString('hex')
+  },
   sleep: function (ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
   }

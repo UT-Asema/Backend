@@ -2,8 +2,8 @@ const bettersqlite = require('better-sqlite3');
 const db = new bettersqlite('database.db');
 
 // create table for users
-// structure: id, username, email, password, date
-db.prepare('CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT, password TEXT, date TEXT)').run();
+// structure: id, username, email, password, salt, date
+db.prepare('CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT, password TEXT, salt TEXT, date TEXT)').run();
 
 // ! sessions handled by express-session & express-session-sqlite
 

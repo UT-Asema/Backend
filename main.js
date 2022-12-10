@@ -5,12 +5,10 @@ let express = require('express'),
   session = require('express-session'),
   SQLiteStore = require('express-session-sqlite').default(session),
   routes = require('./routes'),
-  path = require('path')
+  path = require('path'),
+  utils = require('./utils')
 
 global.db = require('./controllers/database')
-// body parser
-let bodyParser = require('body-parser'),
-  urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 // set up session
 app.use(session({
@@ -29,24 +27,24 @@ global.passport = require('passport')
 let LocalStrategy = require('passport-local').Strategy
 
 // passport config
-passport.use(new LocalStrategy({ usernameField: 'username', passwordField: 'password', passReqToCallback: true },
+passport.use('local', new LocalStrategy({ usernameField: 'username', passwordField: 'password', passReqToCallback: true },
   function (req, username, password, done) {
     // get user from database
     let user = db.prepare('SELECT * FROM users WHERE username = ?').get(username)
-    console.log("'" + username + "'" + ' ' + password)
+    console.log('\'' + username + '\'' + ' ' + password)
 
     console.log(user)
     if (!user) {
       return done(null, false, { message: 'Incorrect username.' })
     }
 
-    console.log("utils")
+    console.log('utils')
     // check password
-    if (password != user.password) {
+    if (utils.hashPassword(password, user.salt) !== user.password) {
       return done(null, false, { message: 'Incorrect password.' })
     }
 
-    console.log("done")
+    console.log('done')
 
     req.user = user
     // return user
@@ -54,13 +52,13 @@ passport.use(new LocalStrategy({ usernameField: 'username', passwordField: 'pass
   })
 )
 
-passport.serializeUser(function(user, done) {
-  done(null, user);
-});
+passport.serializeUser(function (user, done) {
+  done(null, user)
+})
 
-passport.deserializeUser(function(user, done) {
-  done(null, user);
-});
+passport.deserializeUser(function (user, done) {
+  done(null, user)
+})
 
 // set up routes
 routes(app)

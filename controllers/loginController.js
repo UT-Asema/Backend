@@ -47,15 +47,30 @@ module.exports = {
       if (user) {
         res.status(201).send('Username already exists')
       } else {
+        // make salt
+        let salt = utils.makeSalt()
+        // hash password
+        let password = utils.hashPassword(req.body.password, salt)
         // create user
-        db.prepare('INSERT INTO users (username, email, password, date) VALUES (?, ?, ?, ?)').run(req.body.username, req.body.email, req.body.password, new Date().toISOString())
+        db.prepare('INSERT INTO users (username, email, password, salt, date) VALUES (?, ?, ?, ?, ?)').run(req.body.username, req.body.email, password, salt, new Date.now())
         res.status(200).send('User created')
       }
     },
     logout: function (req, res) {
       // check if user exists
-
+      if (req.user) {
+        req.logout()
+        res.status(200).send('Logged out')
+      }
     },
+    'delete': function (req, res) {
+      // check if user exists
+      if (req.user) {
+        // delete user
+        db.prepare('DELETE FROM users WHERE user_id = ?').run(req.user.user_id)
+        res.status(200).send('User deleted')
+      }
+    }
   },
   put: {},
   delete: {},
