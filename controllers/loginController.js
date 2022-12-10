@@ -2,7 +2,7 @@
 require('dotenv').config()
 
 const path = require('path'),
-  utils = require('../utils');
+  utils = require('../utils')
 
 // handle login routes
 module.exports = {
@@ -17,17 +17,26 @@ module.exports = {
     },
     'login': (req, res) => {
       res.sendFile(path.join(__dirname + '../..' + '/login.html'))
+    },
+    'google': (req, res) => {
+      passport.authenticate('google', { scope: ['profile', 'email'] })(req, res)
+    },
+    'google/callback': (req, res) => {
+      passport.authenticate('google', { failureRedirect: '/login' },
+        function (req, res) {
+          res.redirect('/')
+        })(req, res)
     }
   },
   post: {
-    password: function (req, res) {
+    'password': function (req, res) {
       passport.authenticate('local', {
         // successRedirect: '/',
         // failureRedirect: '/login',
         failureFlash: true,
         failureMessage: 'Invalid username or password',
         successMessage: 'Logged in'
-      })(req, res, function next(err) {
+      })(req, res, function next (err) {
         console.log(err)
         if (err) {
           res.status(401).send(err.message)
@@ -36,11 +45,11 @@ module.exports = {
         }
       })
     },
-    register: function (req, res) {
+    'register': function (req, res) {
       // check for mandatory fields
       if (!req.body.username || !req.body.password || !req.body.email) {
         res.status(400).send('Missing fields' + req.body.username + req.body.password + req.body.email)
-        return;
+        return
       }
       // register user
       let user = db.prepare('SELECT * FROM users WHERE username = ?').get(req.body.username)
@@ -56,7 +65,7 @@ module.exports = {
         res.status(200).send('User created')
       }
     },
-    logout: function (req, res) {
+    'logout': function (req, res) {
       // check if user exists
       if (req.user) {
         req.logout()

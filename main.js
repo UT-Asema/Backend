@@ -24,9 +24,10 @@ routes(app)
 
 // passport
 global.passport = require('passport')
-let LocalStrategy = require('passport-local').Strategy
+let LocalStrategy = require('passport-local').Strategy,
+  GoogleStrategy = require('passport-google-oauth20').Strategy
 
-// passport config
+// passport config for local strategy
 passport.use('local', new LocalStrategy({ usernameField: 'username', passwordField: 'password', passReqToCallback: true },
   function (req, username, password, done) {
     // get user from database
@@ -59,6 +60,31 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (user, done) {
   done(null, user)
 })
+
+// set up passport for google oauth2
+passport.use('google',
+  new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/callback"
+},
+  function (accessToken, refreshToken, profile, cb) {
+    // add user to database if not already there
+    let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
+    if (!user) {
+      db.prepare('INSERT INTO users (google_id, username, email) VALUES (?, ?, ?)').run(profile.id, profile.displayName.split(/\s\s+/g).join("")/* removing white space */ + "#" + profile.id, profile.emails[0].value)
+      user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
+    }
+
+    // return user
+    console.log(user)
+    return cb(null, user)
+  }
+))
+
+// set up other passport stuff I don't understand
+app.use(passport.initialize({}))
+app.use(passport.session({ secret: 'a secret' }))
 
 // set up routes
 routes(app)
