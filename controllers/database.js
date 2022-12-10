@@ -38,9 +38,10 @@ IF NOT EXISTS ratings
     rating INTEGER)`);
 
 
+
 module.exports = db;
 
 // on exit close database
-process.on('exit', function() {
+process.on('exit', function () {
     db.close();
-})
+});

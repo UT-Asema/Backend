@@ -5,12 +5,13 @@ module.exports = {
     'get/*': function (req, res) {
       // get the path from the request
       let path = req.path.split('/');
-      let id = path[path.length - 1];
+      let id = parseInt(path[path.length - 1]);
 
       // get post from database
       db.get('SELECT * FROM posts WHERE id = ?', id, function (err, row) {
         if (err) {
           console.log(err);
+          if (res.headersSent) return;
           res.status(500).send('Internal Server Error');
         } else if (!!row) {
           let data = {
@@ -23,21 +24,24 @@ module.exports = {
             rating: -1,
           }
 
-          // get rating from database
-          db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, id], function (err, row) {
+          // get rating from database if user is logged in
+          if (!!req.session.user) db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, id], function (err, row) {
             if (err) {
               console.log(err);
+              if (res.headersSent) return;
               res.status(500).send('Internal Server Error');
             } else if (!!row) {
               data.rating = row.rating;
             }
-            res.status(200).send(data);
           });
+          if (res.headersSent) return;
+          res.status(200).send(JSON.stringify(data));
         }
+
+        // return 404 not found if no other response
+        if (res.headersSent) return;
+        res.status(404).send('Not Found');
       })
-
-      // return post page
-
     },
     'search/*': function (req, res) {
       // get the path from the request
@@ -49,6 +53,7 @@ module.exports = {
       db.all('SELECT * FROM posts WHERE title LIKE ? LIMIT 10', ['%' + query + '%'], function (err, rows) {
         if (err) {
           console.log(err);
+          if (res.headersSent) return;
           res.status(500).send('Internal Server Error');
         } else {
           data = [];
@@ -67,14 +72,20 @@ module.exports = {
             db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
               if (err) {
                 console.log(err);
+                if (res.headersSent) return;
                 res.status(500).send('Internal Server Error');
               } else if (!!row) {
                 data[data.length - 1].rating = row.rating;
               }
             });
           }
+          if (res.headersSent) return;
           res.status(200).send(data);
         }
+
+        if (res.headersSent) return;
+        // return 404 not found if no other response
+        res.status(404).send('Not Found');
       })
     },
     'getTop': function (req, res) {
@@ -82,6 +93,7 @@ module.exports = {
       db.all('SELECT * FROM posts JOIN ratings ON posts.id = ratings.post_id GROUP BY ratings.post_id ORDER BY SUM(ratings.rating) DESC LIMIT 100', function (err, rows) {
         if (err) {
           console.log(err);
+          if (res.headersSent) return;
           res.status(500).send('Internal Server Error');
         } else {
           data = [];
@@ -100,14 +112,20 @@ module.exports = {
             db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
               if (err) {
                 console.log(err);
+                if (res.headersSent) return;
                 res.status(500).send('Internal Server Error');
               } else if (!!row) {
                 data[data.length - 1].rating = row.rating;
               }
             });
           }
+          if (res.headersSent) return;
           res.status(200).send(data);
         }
+
+        // return 404 not found if no other response
+        if (res.headersSent) return;
+        res.status(404).send('Not Found');
       })
     },
     'getTrending': function (req, res) {
@@ -115,6 +133,7 @@ module.exports = {
       db.all('SELECT * FROM posts JOIN ratings ON posts.id = ratings.post_id WHERE posts.date > ? GROUP BY ratings.post_id ORDER BY SUM(ratings.rating) DESC LIMIT 100', [Date.now() - 604800000], function (err, rows) {
         if (err) {
           console.log(err);
+          if (res.headersSent) return;
           res.status(500).send('Internal Server Error');
         } else {
           data = [];
@@ -133,14 +152,20 @@ module.exports = {
             db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
               if (err) {
                 console.log(err);
+                if (res.headersSent) return;
                 res.status(500).send('Internal Server Error');
               } else if (!!row) {
                 data[data.length - 1].rating = row.rating;
               }
             });
           }
+          if (res.headersSent) return;
           res.status(200).send(data);
         }
+
+        // return 404 not found if no other response
+        if (res.headersSent) return;
+        res.status(404).send('Not Found');
       })
     },
     'getNew': function (req, res) {
@@ -148,6 +173,7 @@ module.exports = {
       db.all('SELECT * FROM posts ORDER BY date DESC LIMIT 100', function (err, rows) {
         if (err) {
           console.log(err);
+          if (res.headersSent) return;
           res.status(500).send('Internal Server Error');
         } else {
           data = [];
@@ -166,14 +192,20 @@ module.exports = {
             db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
               if (err) {
                 console.log(err);
+                if (res.headersSent) return;
                 res.status(500).send('Internal Server Error');
               } else if (!!row) {
                 data[data.length - 1].rating = row.rating;
               }
             });
           }
+          if (res.headersSent) return;
           res.status(200).send(data);
         }
+
+        // return 404 not found if no other response
+        if (res.headersSent) return;
+        res.status(404).send('Not Found');
       })
     }
   },
