@@ -1,75 +1,76 @@
 // html server
-const express = require('express'),
-  session = require('express-session'),
+let express = require('express'),
   sqlite3 = require('sqlite3').verbose(),
-  sqliteStoreFactory = require('express-session-sqlite'),
-  SqliteStore = sqliteStoreFactory.default(session),
-  app = express()
+  app = express(),
+  session = require('express-session'),
+  SQLiteStore = require('express-session-sqlite').default(session),
+  routes = require('./routes'),
+  path = require('path')
 
-// set up password for login with google
-const passport = require('passport'),
-  GoogleStrategy = require('passport-google-oauth20').Strategy
-  // keys = require('./config/keys')
-
-// set up database
 global.db = require('./controllers/database')
+// body parser
+let bodyParser = require('body-parser'),
+  urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 // set up session
 app.use(session({
+  store: new SQLiteStore({ driver: sqlite3.Database, path: 'database.db', table: 'sessions' }),
+  secret: 'a secret',
   resave: false,
   saveUninitialized: false,
-  secret: 'secretThatIsVerySecret',
-  store: new SqliteStore({
-    driver: sqlite3.Database,
-    path: 'database.db',
-    table: 'sessions',
-    cookie: { maxAge: 60000 }
-  })
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } // 1 week
 }))
 
-// set up passport
-app.use(passport.initialize())
+// set up routes
+routes(app)
 
-// set up passport session
-app.use(passport.session())
+// passport
+global.passport = require('passport')
+let LocalStrategy = require('passport-local').Strategy
 
-passport.deserializeUser(function (obj, done) {
-  // fetch from databse the userData that we need based on the serialized ID
-  done(null, obj)
-})
+// passport config
+passport.use(new LocalStrategy({ usernameField: 'username', passwordField: 'password', passReqToCallback: true },
+  function (req, username, password, done) {
+    // get user from database
+    let user = db.prepare('SELECT * FROM users WHERE username = ?').get(username)
+    console.log("'" + username + "'" + ' ' + password)
 
-passport.serializeUser(function (user, done) {
-  console.log('serialized')
-  // we need to only serialize the databse userID of the user
-  done(null, user)
-})
+    console.log(user)
+    if (!user) {
+      return done(null, false, { message: 'Incorrect username.' })
+    }
 
-passport.deserializeUser(function (obj, done) {
-  // fetch from databse the userData that we need based on the serialized ID
-  done(null, obj)
-})
+    console.log("utils")
+    // check password
+    if (password != user.password) {
+      return done(null, false, { message: 'Incorrect password.' })
+    }
 
-// passport.use(
-//   new GoogleStrategy( )
-// )
+    console.log("done")
+
+    req.user = user
+    // return user
+    return done(null, user)
+  })
+)
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
 
 // set up routes
-require('./routes')(app)
+routes(app)
 
 // start server
 app.listen(3000, function () {
   console.log('Listening on port 3000')
 })
 
-// websocket server
-const WebSocket = require('ws')
-const wss = new WebSocket.Server({ port: 8080 })
-
-wss.on('connection', function connection (ws) {
-  ws.on('message', function incoming (message) {
-    console.log('received: %s', message)
-  })
-
-  ws.send('something')
+// serve login form
+app.get('/login', function (req, res) {
+  res.sendFile(path.join(__dirname + '/login.html'))
 })
-

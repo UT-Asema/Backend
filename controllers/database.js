@@ -1,47 +1,23 @@
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('database.db');
+const bettersqlite = require('better-sqlite3');
+const db = new bettersqlite('database.db');
 
 // create table for users
 // structure: id, username, email, password, date
-db.run(`
-CREATE TABLE 
-IF NOT EXISTS users 
-    (user_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    username TEXT, 
-    email TEXT, 
-    password TEXT, 
-    date TEXT)`);
+db.prepare('CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT, password TEXT, date TEXT)').run();
 
 // ! sessions handled by express-session & express-session-sqlite
 
 // create table for posts
 // structure: id, user_id, title, description, content (JSON), date, modified_date
-db.run(`
-CREATE TABLE
-IF NOT EXISTS posts
-    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    title TEXT,
-    description TEXT,
-    content TEXT,
-    date INTEGER,
-    modified_date INTEGER)`);
+db.prepare('CREATE TABLE IF NOT EXISTS posts (post_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, title TEXT, description TEXT, content TEXT, date TEXT, modified_date TEXT)').run();
 
 // create table for ratings (0-5 stars)
 // structure: id, user_id, post_id, rating
-db.run(`
-CREATE TABLE
-IF NOT EXISTS ratings
-    (id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    post_id INTEGER,
-    rating INTEGER)`);
-
-
+db.prepare('CREATE TABLE IF NOT EXISTS ratings (rating_id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, post_id INTEGER, rating INTEGER)').run();
 
 module.exports = db;
 
 // on exit close database
-process.on('exit', function () {
-    db.close();
-});
+// process.on('exit', function () {
+//     db.close();
+// });
