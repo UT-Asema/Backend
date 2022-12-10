@@ -1,20 +1,24 @@
 // html server
 const express = require('express'),
   session = require('express-session'),
-  sqliteStoreFactory = require('connect-session-sqlite'),
-  SqliteStore = sqliteStoreFactory(session),
+  sqlite3 = require('sqlite3').verbose(),
+  sqliteStoreFactory = require('express-session-sqlite'),
+  SqliteStore = sqliteStoreFactory.default(session),
   app = express()
 
 // set up password for login with google
 const passport = require('passport'),
-  GoogleStrategy = require('passport-google-oauth20').Strategy,
-  keys = require('./config/keys')
+  GoogleStrategy = require('passport-google-oauth20').Strategy
+  // keys = require('./config/keys')
 
 // set up database
 global.db = require('./controllers/database')
 
 // set up session
 app.use(session({
+  resave: false,
+  saveUninitialized: false,
+  secret: 'secretThatIsVerySecret',
   store: new SqliteStore({
     driver: sqlite3.Database,
     path: 'database.db',
@@ -45,9 +49,9 @@ passport.deserializeUser(function (obj, done) {
   done(null, obj)
 })
 
-passport.use(
-  new GoogleStrategy( )
-)
+// passport.use(
+//   new GoogleStrategy( )
+// )
 
 // set up routes
 require('./routes')(app)

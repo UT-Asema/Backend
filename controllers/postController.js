@@ -76,6 +76,105 @@ module.exports = {
           res.status(200).send(data);
         }
       })
+    },
+    'getTop': function (req, res) {
+      // get top 100 posts based on star count from all users
+      db.all('SELECT * FROM posts JOIN ratings ON posts.id = ratings.post_id GROUP BY ratings.post_id ORDER BY SUM(ratings.rating) DESC LIMIT 100', function (err, rows) {
+        if (err) {
+          console.log(err);
+          res.status(500).send('Internal Server Error');
+        } else {
+          data = [];
+          for (let row of rows) {
+            data.push({
+              id: row.id,
+              title: row.title,
+              description: row.description,
+              content: row.content,
+              date: row.date,
+              modified_date: row.modified_date,
+              rating: -1,
+            })
+
+            // get rating from database
+            db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
+              if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error');
+              } else if (!!row) {
+                data[data.length - 1].rating = row.rating;
+              }
+            });
+          }
+          res.status(200).send(data);
+        }
+      })
+    },
+    'getTrending': function (req, res) {
+      // get 100 best posts based on star count from all users in the last week
+      db.all('SELECT * FROM posts JOIN ratings ON posts.id = ratings.post_id WHERE posts.date > ? GROUP BY ratings.post_id ORDER BY SUM(ratings.rating) DESC LIMIT 100', [Date.now() - 604800000], function (err, rows) {
+        if (err) {
+          console.log(err);
+          res.status(500).send('Internal Server Error');
+        } else {
+          data = [];
+          for (let row of rows) {
+            data.push({
+              id: row.id,
+              title: row.title,
+              description: row.description,
+              content: row.content,
+              date: row.date,
+              modified_date: row.modified_date,
+              rating: -1,
+            })
+
+            // get rating from database
+            db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
+              if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error');
+              } else if (!!row) {
+                data[data.length - 1].rating = row.rating;
+              }
+            });
+          }
+          res.status(200).send(data);
+        }
+      })
+    },
+    'getNew': function (req, res) {
+      // get newest 100 posts
+      db.all('SELECT * FROM posts ORDER BY date DESC LIMIT 100', function (err, rows) {
+        if (err) {
+          console.log(err);
+          res.status(500).send('Internal Server Error');
+        } else {
+          data = [];
+          for (let row of rows) {
+            data.push({
+              id: row.id,
+              title: row.title,
+              description: row.description,
+              content: row.content,
+              date: row.date,
+              modified_date: row.modified_date,
+              rating: -1,
+            })
+
+            // get rating from database
+            db.get('SELECT * FROM ratings WHERE user_id = ? AND post_id = ?', [req.user.user_id, row.id], function (err, row) {
+              if (err) {
+                console.log(err);
+                res.status(500).send('Internal Server Error');
+              } else if (!!row) {
+                data[data.length - 1].rating = row.rating;
+              }
+            });
+          }
+          res.status(200).send(data);
+        }
+      })
     }
   },
   post: {

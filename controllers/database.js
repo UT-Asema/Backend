@@ -24,8 +24,8 @@ IF NOT EXISTS posts
     title TEXT,
     description TEXT,
     content TEXT,
-    date TEXT,
-    modified_date TEXT)`);
+    date INTEGER,
+    modified_date INTEGER)`);
 
 // create table for ratings (0-5 stars)
 // structure: id, user_id, post_id, rating

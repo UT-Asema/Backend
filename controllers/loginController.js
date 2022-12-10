@@ -4,7 +4,15 @@ module.exports = {
   get: {},
   post: {
     login: function (req, res) {
-
+      // using passport to authenticate either google or local
+      // if google
+      passport.authenticate('google', { scope: ['profile'] })(req, res)
+      // if local
+      passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/login',
+        failureFlash: true
+      })(req, res)
     },
     register: function (req, res) {
       // check if user exists

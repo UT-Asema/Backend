@@ -26,6 +26,33 @@ Search for posts by name
 | query | string | The ID of the post to get | &#9744;          |
 ### Response
 array of 10 posts (same as the ones got from /posts/get/:ID)
+## /posts/getTop
+### Description
+Get the top 100 posts by rating of all time
+### Parameters
+| Name | Type | Description | In request body? |
+|------|------|-------------|------------------|
+| none | none | none        | &#9744;          |
+### Response
+array of 100 posts (same as the ones got from /posts/get/:ID)
+## /posts/getTrending
+### Description
+Get the top 100 posts by rating of the last 7 days
+### Parameters
+| Name | Type | Description | In request body? |
+|------|------|-------------|------------------|
+| none | none | none        | &#9744;          |
+### Response
+array of 100 posts (same as the ones got from /posts/get/:ID)
+## /posts/getNew
+### Description
+Get the top 100 posts by rating of the last 24 hours
+### Parameters
+| Name | Type | Description | In request body? |
+|------|------|-------------|------------------|
+| none | none | none        | &#9744;          |
+### Response
+array of 100 posts (same as the ones got from /posts/get/:ID)
 
 # POST
 ## /posts/create
