@@ -236,8 +236,17 @@ module.exports = {
             // return 500 error
             res.status(500).send('Internal Server Error')
           } else {
-            // redirect to post
-            res.redirect('/posts/get/' + this.lastID)
+            // get post id
+            db.get('SELECT id FROM posts WHERE user_id = ? AND title = ? AND description = ? AND content = ? AND date = ? AND modified_date = ?', [req.session.user_id, data.title, data.description, data.content, data.date, data.modified_date], function (err, row) {
+              if (err) {
+                console.log(err)
+                // return 500 error
+                res.status(500).send('Internal Server Error')
+              } else {
+                // return post id
+                res.status(200).send({ id: row.id })
+              }
+            })
           }
         }
       )
