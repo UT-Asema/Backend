@@ -92,9 +92,6 @@ app.use(function (req, res, next) {
   res.header("Referrer-Policy", "no-referrer");
 })
 
-
-app.use(cors())
-
 // set up routes
 routes(app)
 
@@ -103,7 +100,9 @@ app.listen(3000, function () {
   console.log('Listening on port 3000')
 })
 
-// serve login form
-app.get('/login', function (req, res) {
-  res.sendFile(path.join(__dirname + '/login.html'))
-})
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", req.headers.origin); // also  tried "*" here
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
