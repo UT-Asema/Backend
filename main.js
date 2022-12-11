@@ -35,6 +35,13 @@ app.use(function (req, res, next) {
 // set up routes
 routes(app)
 
+// set session to samesite none
+app.use(function (req, res, next) {
+  if (req.session) {
+    req.session.cookie.sameSite = 'none'
+  }
+  next()
+})
 // start server
 app.listen(3000, function () {
   console.log('Listening on port 3000')
