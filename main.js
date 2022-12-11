@@ -18,7 +18,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7,
-    secure: true,
+    Secure: true,
     httpOnly: true,
     SameSite: "none"} // 1 week
 }))
@@ -41,9 +41,9 @@ routes(app)
 // set session to samesite none
 app.use(function (req, res, next) {
   if (req.session) {
-    req.session.cookie.SameSite = 'none'
-    // set secure to false
-    req.session.cookie.secure = false
+    // req.session.cookie.SameSite = 'none'
+    // // set secure to false
+    // req.session.cookie.secure = false
   }
   next()
 })
