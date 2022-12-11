@@ -9,7 +9,7 @@ const cors = require('cors')
 
 // export the routes
 module.exports = function (app) {
-  app.use(cors({credentials: true, origin: "*localhost*, *.sopy.one*", methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  app.use(cors({credentials: true, origin: "*localhost, *.sopy.one", methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     preflightContinue: true, optionsSuccessStatus: 200}))
   // for each controller
   for (let controller of [loginController, postController]) {
