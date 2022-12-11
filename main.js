@@ -45,7 +45,7 @@ app.use(function (req, res, next) {
   if (req.session) {
     // req.session.cookie.SameSite = 'none'
     // // set secure to false
-    // req.session.cookie.secure = false
+    req.session.cookie.secure = true
   }
   next()
 })
