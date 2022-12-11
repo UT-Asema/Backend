@@ -16,11 +16,8 @@ module.exports = function (app) {
       for (let route in controller[method]) {
         // get the path from the controller and route name and method
         app[method]('/' + controller.path + route, urlencodedParser,
-          ( req, res, next ) =>
-          {
-            res.header('Access-Control-Allow-Origin', req.headers.origin)
+          ( req, res, next ) => {
             controller[method][route](req, res)
-
           }
         )
       }
