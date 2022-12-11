@@ -17,7 +17,7 @@ app.use(session({
   secret: 'a secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: true, sameSite: "none"} // 1 week
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: false, sameSite: "none", httpOnly: false } // 1 week
 }))
 
 // set up routes
@@ -93,7 +93,7 @@ app.use(function (req, res, next) {
 })
 
 app.use((req, res, next)=>{
-  req["sessionCookies"].secure = true;
+  req["sessionCookies"].secure = false;
   next();
 });
 

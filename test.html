@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script defer>
+        // check if the user is logged in
+        console.log("Checking if user is logged in...");
+        let loggedIn = false;
+
+        let check = (data) => {
+          if(data?.status === 200) {
+            console.log("User is logged in");
+            loggedIn = true;
+          }
+          else {
+            console.log("User is not logged in");
+            loggedIn = false;
+          }
+        }
+        $.ajax({
+            url: 'https://localhost:3000/auth/check',
+            type: 'GET',
+            dataType: 'json',
+            success: check,
+            error: check
+        });
+
+        // attempt to log in
+        console.log("Attempting to log in...");
+        $.ajax({
+            url: 'https://localhost:3000/auth/login',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              username: 'sospy',
+              password: 'sopy'
+            }}) // then if the user is logged indicated by response status 200 then print to console
+            .then((data) => {
+              if(data?.status === 200) {
+                console.log("Logged in");
+                loggedIn = true;
+              }
+              else {
+                console.log("Not logged in");
+                loggedIn = false;
+              }
+            })
+
+        // register a new user
+        console.log("Attempting to register a new user...");
+        $.ajax({
+            url: 'https://localhost:3000/auth/register',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              username: 'sosspy',
+              password: 'sopy',
+              email: 'doimpt@sopy.one'
+            }}).then((data) => {
+              console.log("Registered new user");
+              console.log(data);
+            }).catch((data) => {
+              console.log("Failed to register new user");
+              console.log(data);
+            });
+
+    </script>
+</head>
+<body>
+<!-- Form with answers posted at localhost:3000-->
+<form action="http://localhost:3000/auth/login/password" method="post">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username">
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password">
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>
