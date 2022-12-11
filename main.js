@@ -39,7 +39,8 @@ routes(app)
 app.use(function (req, res, next) {
   if (req.session) {
     req.session.cookie.SameSite = 'none'
-    req.session.cookie.Secure = 'false'
+    // set secure to false
+    req.session.cookie.secure = false
   }
   next()
 })
