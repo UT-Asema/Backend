@@ -17,85 +17,20 @@ app.use(session({
   secret: 'a secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: false, sameSite: "none", httpOnly: false } // 1 week
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: "auto", sameSite: "none", httpOnly: false } // 1 week
 }))
 
-// set up routes
-routes(app)
+// set up cors
+app.use(cors())
 
-// passport
-global.passport = require('passport')
-let LocalStrategy = require('passport-local').Strategy,
-  GoogleStrategy = require('passport-google-oauth20').Strategy
-
-// passport config for local strategy
-passport.use('local', new LocalStrategy({ usernameField: 'username', passwordField: 'password', passReqToCallback: true },
-  function (req, username, password, done) {
-    // get user from database
-    let user = db.prepare('SELECT * FROM users WHERE username = ?').get(username)
-    console.log('\'' + username + '\'' + ' ' + password)
-
-    console.log(user)
-    if (!user) {
-      return done(null, false, { message: 'Incorrect username.' })
-    }
-
-    console.log('utils')
-    // check password
-    if (utils.hashPassword(password, user.salt) !== user.password) {
-      return done(null, false, { message: 'Incorrect password.' })
-    }
-
-    console.log('done')
-
-    req.user = user
-    // return user
-    return done(null, user)
-  })
-)
-
-passport.serializeUser(function (user, done) {
-  done(null, user)
-})
-
-passport.deserializeUser(function (user, done) {
-  done(null, user)
-})
-
-// set up passport for google oauth2
-// passport.use('google',
-//   new GoogleStrategy({
-//   clientID: process.env.GOOGLE_CLIENT_ID,
-//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//   callbackURL: "http://localhost:3000/auth/google/callback"
-// },
-//   function (accessToken, refreshToken, profile, cb) {
-//     // add user to database if not already there
-//     let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
-//     if (!user) {
-//       db.prepare('INSERT INTO users (google_id, username, email) VALUES (?, ?, ?)').run(profile.id, profile.displayName.split(/\s\s+/g).join("")/* removing white space */ + "#" + profile.id, profile.emails[0].value)
-//       user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
-//     }
-//
-//     // return user
-//     console.log(user)
-//     return cb(null, user)
-//   }
-// ))
-
-// set up other passport stuff I don't understand
-app.use(passport.initialize({}))
-app.use(passport.session({ secret: 'a secret' }))
-
-// set headers
+// setup cors to allow cross origin requests
 app.use(function (req, res, next) {
-  res.header("Referrer-Policy", "no-referrer");
+  res.header('Access-Control-Allow-Origin', req.headers.origin)
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header('Access-Control-Allow-Credentials', true)
+  next()
 })
-
-app.use((req, res, next)=>{
-  req["sessionCookies"].secure = false;
-  next();
-});
 
 // set up routes
 routes(app)
@@ -104,11 +39,3 @@ routes(app)
 app.listen(3000, function () {
   console.log('Listening on port 3000')
 })
-
-app.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", req.headers.origin); // also  tried "*" here
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-  next();
-});
