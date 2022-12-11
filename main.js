@@ -17,7 +17,10 @@ app.use(session({
   secret: 'a secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: "false", sameSite: "none", httpOnly: false } // 1 week
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7,
+    secure: true,
+    httpOnly: true,
+    SameSite: "none"} // 1 week
 }))
 
 // set up cors
