@@ -9,7 +9,7 @@ const cors = require('cors')
 
 // export the routes
 module.exports = function (app) {
-  app.use(cors({credentials: true, origin: "http://localhost", methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  app.use(cors({credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     preflightContinue: true, optionsSuccessStatus: 200}))
   // for each controller
   for (let controller of [loginController, postController]) {
@@ -19,7 +19,11 @@ module.exports = function (app) {
       for (let route in controller[method]) {
         // get the path from the controller and route name and method
         app[method]('/' + controller.path + route, urlencodedParser,
-          controller[method][route]
+          ( req, res, next ) =>
+          {
+            res.header('Access-Control-Allow-Origin', req.headers.origin)
+            controller[method][route](req, res)
+          }
         )
       }
     }
