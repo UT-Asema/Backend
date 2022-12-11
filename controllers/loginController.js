@@ -18,26 +18,32 @@ module.exports = {
     'login': (req, res) => {
       res.sendFile(path.join(__dirname + '../..' + '/login.html'))
     },
+    // 'google': (req, res) => {
+    //   passport.authenticate('google', { scope: ['profile', 'email'] })(req, res)
+    // },
+    // 'google/callback': (req, res) => {
+    //   passport.authenticate('google', { failureRedirect: '/login' },
+    //     function (req, res) {
+    //       res.redirect('/')
+    //     })(req, res)
+    // }
   },
   post: {
-    'login': function (req, res) {
-      // get username and password from body
-      let username = req.body.username
-      let password = req.body.password
-
-      // check if username and password are valid
-      let user = utils.checkUser(username, password)
-
-      // if user is valid
-      if (user) {
-        // set session user to user
-        req.session.user = user
-        // send user
-        res.status(200).send(user)
-      } else {
-        // send error
-        res.status(401).send('Invalid username or password')
-      }
+    'password': function (req, res) {
+      passport.authenticate('local', {
+        // successRedirect: '/',
+        // failureRedirect: '/login',
+        failureFlash: true,
+        failureMessage: 'Invalid username or password',
+        successMessage: 'Logged in'
+      })(req, res, function next (err) {
+        console.log(err)
+        if (err) {
+          res.status(401).send(err.message)
+        } else {
+          res.status(200).send('Logged in')
+        }
+      })
     },
     'register': function (req, res) {
       // check for mandatory fields
