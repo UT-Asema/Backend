@@ -92,6 +92,9 @@ app.use(function (req, res, next) {
   res.header("Referrer-Policy", "no-referrer");
 })
 
+
+app.use(cors())
+
 // set up routes
 routes(app)
 

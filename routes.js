@@ -5,12 +5,9 @@ const bodyParser = require('body-parser'),
 // load files from controllers folder
 const loginController = require('./controllers/loginController')
 const postController = require('./controllers/postController')
-const cors = require('cors')
 
 // export the routes
 module.exports = function (app) {
-  app.use(cors({credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    preflightContinue: true, optionsSuccessStatus: 200}))
   // for each controller
   for (let controller of [loginController, postController]) {
     // for each method
