@@ -21,9 +21,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7,
-    Secure: true,
+    secure: true,
     httpOnly: true,
-    SameSite: "none"} // 1 week
+    sameSite: "none"} // 1 week
 }))
 
 // setup cors to allow cross origin requests
@@ -51,7 +51,7 @@ app.use(function (req, res, next) {
 // add Secure = true to end of Set-Cookie header
 app.use(function (req, res, next) {
   if (req.session) {
-    res.setHeader('Set-Cookie', res.getHeader('Set-Cookie') + '; Secure')
+    res.setHeader('Set-Cookie', res.getHeader('Set-Cookie') + '; Secure; SameSite=None')
   }
   next();
 })
