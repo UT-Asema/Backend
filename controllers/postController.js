@@ -218,7 +218,7 @@ module.exports = {
 
       // post post
       // get post data from request
-      let date = new Date().now()
+      let date = new Date.now()
       const data =
         {
           title: req.body.title,
@@ -273,7 +273,7 @@ module.exports = {
                 title: req.body.title,
                 description: req.body.description,
                 content: req.body.content,
-                modified_date: new Date().now()
+                modified_date: Date.now()
               }
             // edit post in database
             db.run(`UPDATE posts SET title = ?, description = ?, content = ?, modified_date = ? WHERE id = ?`, [data.title, data.description, data.content, data.modified_date, req.body.id], function (err) {
