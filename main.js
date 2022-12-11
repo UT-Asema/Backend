@@ -17,7 +17,7 @@ app.use(session({
   secret: 'a secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: "auto", sameSite: "none", httpOnly: false } // 1 week
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: "auto", SameSite: "none", httpOnly: false } // 1 week
 }))
 
 // set up cors
@@ -38,7 +38,7 @@ routes(app)
 // set session to samesite none
 app.use(function (req, res, next) {
   if (req.session) {
-    req.session.cookie.sameSite = 'none'
+    req.session.cookie.SameSite = 'none'
   }
   next()
 })
