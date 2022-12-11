@@ -17,7 +17,7 @@ app.use(session({
   secret: 'a secret',
   resave: false,
   saveUninitialized: false,
-  // cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } // 1 week
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, secure: true, sameSite: "none"} // 1 week
 }))
 
 // set up routes
@@ -91,6 +91,11 @@ app.use(passport.session({ secret: 'a secret' }))
 app.use(function (req, res, next) {
   res.header("Referrer-Policy", "no-referrer");
 })
+
+app.use((req, res, next)=>{
+  req["sessionCookies"].secure = true;
+  next();
+});
 
 // set up routes
 routes(app)
