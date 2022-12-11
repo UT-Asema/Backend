@@ -90,6 +90,8 @@ app.use(passport.session({ secret: 'a secret' }))
 // set headers
 app.use(function (req, res, next) {
   res.header("Referrer-Policy", "no-referrer");
+  // Access-Control-Allow-Credentials
+  res.header("Access-Control-Allow-Credentials", "true");
 })
 
 app.use((req, res, next)=>{
