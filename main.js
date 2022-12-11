@@ -11,6 +11,9 @@ let express = require('express'),
 
 global.db = require('./controllers/database')
 
+// set up cors
+app.use(cors())
+
 // set up session
 app.use(session({
   store: new SQLiteStore({ driver: sqlite3.Database, path: 'database.db', table: 'sessions' }),
@@ -22,9 +25,6 @@ app.use(session({
     httpOnly: true,
     SameSite: "none"} // 1 week
 }))
-
-// set up cors
-app.use(cors())
 
 // setup cors to allow cross origin requests
 app.use(function (req, res, next) {
