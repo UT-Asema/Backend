@@ -22,8 +22,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7,
     secure: true,
-    httpOnly: true,
-    sameSite: "none"} // 1 week
+    sameSite: 'None',} // 1 week
 }))
 
 // setup cors to allow cross origin requests
