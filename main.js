@@ -52,9 +52,7 @@ app.use(function (req, res, next) {
 
 // add Secure = true to end of Set-Cookie header
 app.use(function (req, res, next) {
-  if (req.session) {
-    res.setHeader('Set-Cookie', res.getHeader('Set-Cookie') + '; Secure; SameSite=None')
-  }
+  res.setHeader('Set-Cookie', res.getHeader('Set-Cookie') + '; Secure; SameSite=None')
   next();
 })
 app.listen(3000, function () {
