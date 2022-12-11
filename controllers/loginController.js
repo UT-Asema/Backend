@@ -18,15 +18,15 @@ module.exports = {
     'login': (req, res) => {
       res.sendFile(path.join(__dirname + '../..' + '/login.html'))
     },
-    'google': (req, res) => {
-      passport.authenticate('google', { scope: ['profile', 'email'] })(req, res)
-    },
-    'google/callback': (req, res) => {
-      passport.authenticate('google', { failureRedirect: '/login' },
-        function (req, res) {
-          res.redirect('/')
-        })(req, res)
-    }
+    // 'google': (req, res) => {
+    //   passport.authenticate('google', { scope: ['profile', 'email'] })(req, res)
+    // },
+    // 'google/callback': (req, res) => {
+    //   passport.authenticate('google', { failureRedirect: '/login' },
+    //     function (req, res) {
+    //       res.redirect('/')
+    //     })(req, res)
+    // }
   },
   post: {
     'password': function (req, res) {

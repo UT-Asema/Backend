@@ -6,7 +6,8 @@ let express = require('express'),
   SQLiteStore = require('express-session-sqlite').default(session),
   routes = require('./routes'),
   path = require('path'),
-  utils = require('./utils')
+  utils = require('./utils'),
+  cors = require('cors')
 
 global.db = require('./controllers/database')
 
@@ -62,29 +63,34 @@ passport.deserializeUser(function (user, done) {
 })
 
 // set up passport for google oauth2
-passport.use('google',
-  new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/callback"
-},
-  function (accessToken, refreshToken, profile, cb) {
-    // add user to database if not already there
-    let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
-    if (!user) {
-      db.prepare('INSERT INTO users (google_id, username, email) VALUES (?, ?, ?)').run(profile.id, profile.displayName.split(/\s\s+/g).join("")/* removing white space */ + "#" + profile.id, profile.emails[0].value)
-      user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
-    }
-
-    // return user
-    console.log(user)
-    return cb(null, user)
-  }
-))
+// passport.use('google',
+//   new GoogleStrategy({
+//   clientID: process.env.GOOGLE_CLIENT_ID,
+//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//   callbackURL: "http://localhost:3000/auth/google/callback"
+// },
+//   function (accessToken, refreshToken, profile, cb) {
+//     // add user to database if not already there
+//     let user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
+//     if (!user) {
+//       db.prepare('INSERT INTO users (google_id, username, email) VALUES (?, ?, ?)').run(profile.id, profile.displayName.split(/\s\s+/g).join("")/* removing white space */ + "#" + profile.id, profile.emails[0].value)
+//       user = db.prepare('SELECT * FROM users WHERE google_id = ?').get(profile.id)
+//     }
+//
+//     // return user
+//     console.log(user)
+//     return cb(null, user)
+//   }
+// ))
 
 // set up other passport stuff I don't understand
 app.use(passport.initialize({}))
 app.use(passport.session({ secret: 'a secret' }))
+
+// set headers
+app.use(function (req, res, next) {
+  res.header("Referrer-Policy", "no-referrer");
+})
 
 // set up routes
 routes(app)
