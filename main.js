@@ -14,15 +14,18 @@ global.db = require('./controllers/database')
 // set up cors
 app.use(cors())
 
+app.set("trust proxy", 1);
+
 // set up session
 app.use(session({
   store: new SQLiteStore({ driver: sqlite3.Database, path: 'database.db', table: 'sessions' }),
   secret: 'a secret',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7,
     secure: true,
-    sameSite: 'None',} // 1 week
+    httpOnly: true,
+    sameSite: 'none',} // 1 week
 }))
 
 // setup cors to allow cross origin requests
