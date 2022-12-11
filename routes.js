@@ -20,6 +20,17 @@ module.exports = function (app) {
           {
             res.header('Access-Control-Allow-Origin', req.headers.origin)
             controller[method][route](req, res)
+
+            // set-cookie
+            res.header('Access-Control-Allow-Credentials', true);
+            // get res header by name
+            let smth = res.getHeader('Set-Cookie')
+            // remove HttpOnly
+            smth = smth.replace('HttpOnly', '')
+            // append SameSite=Lax
+            smth = smth + '; SameSite=Lax'
+
+            res.header("Set-Cookie", smth);
           }
         )
       }
