@@ -61,7 +61,7 @@ module.exports = {
         // hash password
         let password = utils.hashPassword(req.body.password, salt)
         // create user
-        db.prepare('INSERT INTO users (username, email, password, salt, date) VALUES (?, ?, ?, ?, ?)').run(req.body.username, req.body.email, password, salt, new Date.now())
+        db.prepare('INSERT INTO users (username, email, password, salt, date) VALUES (?, ?, ?, ?, ?)').run(req.body.username, req.body.email, password, salt, Date.now())
         res.status(200).send('User created')
       }
     },
